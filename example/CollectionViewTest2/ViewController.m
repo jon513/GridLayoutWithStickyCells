@@ -71,15 +71,15 @@
     if (indexPath.section == 0) {
         cell.backgroundColor = [UIColor lightGrayColor];
         NSString* headerText = self.headers[indexPath.row];
-        NSString* sortSymble = @"";
+        NSString* sortSymbol = @"";
         if ([self.sort isEqualToString:headerText]) {
             if (self.assending) {
-                sortSymble = @"▲ ";
+                sortSymbol = @"▲ ";
             }else{
-                sortSymble = @"▼ ";
+                sortSymbol = @"▼ ";
             }
         }
-        label.text = [NSString stringWithFormat:@"%@%@", sortSymble, headerText];
+        label.text = [NSString stringWithFormat:@"%@%@", sortSymbol, headerText];
         
     }else {
         label.text = [NSString stringWithFormat:@"\u200e%@\u200e",[self.users[indexPath.section-1] valueForKeyPath:self.headers[indexPath.row]] ];
