@@ -116,7 +116,7 @@
         }
         self.sort = updatedSort;
         [self.users sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.sort ascending:self.assending]]];
-        [self.collectionView setContentOffset:CGPointMake(self.collectionView.contentOffset.x, 0) animated:NO];
+        [self.collectionView setContentOffset:CGPointMake(self.collectionView.contentOffset.x, -self.collectionView.contentInset.top) animated:NO];
         [self.collectionView reloadData];
     }
     
