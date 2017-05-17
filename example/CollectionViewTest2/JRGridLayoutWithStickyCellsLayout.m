@@ -1,6 +1,26 @@
 
 
 #import "JRGridLayoutWithStickyCellsLayout.h"
+
+@interface NSIndexPath (JRGridLayoutWithStickyCellsLayout)
+@property (nonatomic, readonly) NSInteger tableRow;
+@property (nonatomic, readonly) NSInteger tableColumn;
++(instancetype) indexPathForTableRow:(NSInteger) tableRow tableColumn:(NSInteger) tableColumn;
+@end
+@implementation NSIndexPath (JRGridLayoutWithStickyCellsLayout)
+
+-(NSInteger) tableRow{
+    return self.section;
+}
+-(NSInteger) tableColumn{
+    return self.row;
+}
++(instancetype) indexPathForTableRow:(NSInteger) tableRow tableColumn:(NSInteger) tableColumn{
+    return [NSIndexPath indexPathForRow:tableColumn inSection:tableRow];
+}
+@end
+
+
 @interface JRGridLayoutWithStickyCellsLayout()
 @property (nonatomic, strong) NSArray* columnWidths;
 @property (nonatomic, strong) NSArray* rowHeights;
@@ -84,10 +104,10 @@
 }
 -(CGRect) frameForItemAtIndexPath:(NSIndexPath*) indexPath{
     CGRect frame = CGRectZero;
-    frame.origin.x = [self originXForColumnAtIndex:indexPath.row];
-    frame.origin.y = [self originYForRowAtIndex:indexPath.section];
-    frame.size.width =  [self columnWidthAtIndex:indexPath.row];
-    frame.size.height =   [self rowHeightAtIndex:indexPath.section];
+    frame.origin.x = [self originXForColumnAtIndex:indexPath.tableColumn];
+    frame.origin.y = [self originYForRowAtIndex:indexPath.tableRow];
+    frame.size.width =  [self columnWidthAtIndex:indexPath.tableColumn];
+    frame.size.height =   [self rowHeightAtIndex:indexPath.tableRow];
     
     return frame;
 }
@@ -159,7 +179,7 @@
     CGRect frame =  [self frameForItemAtIndexPath:indexPath];
     
     attributes.zIndex = 0;
-    if (indexPath.row < self.columnsToStickOnLeft) {
+    if (indexPath.tableColumn < self.columnsToStickOnLeft) {
         attributes.zIndex+= 1;
         if (self.collectionView.contentOffset.x > 0) {
             frame.origin.x += self.collectionView.contentOffset.x;
@@ -175,7 +195,7 @@
         frame.origin.x += adjustment;
         
     }
-    if (indexPath.section < self.rowsToStickOnTop) {
+    if (indexPath.tableRow < self.rowsToStickOnTop) {
         attributes.zIndex+= 2;
         if (self.collectionView.contentOffset.y > 0) {
             frame.origin.y += self.collectionView.contentOffset.y;
@@ -233,7 +253,7 @@
        [visibleRows enumerateIndexesUsingBlock:^(NSUInteger row, BOOL * _Nonnull stop) {
            if ([self.collectionView numberOfSections] > row) {
                if ([self.collectionView numberOfItemsInSection:row] > column) {
-                   [items addObject:[self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForRow:column inSection:row]]];
+                   [items addObject:[self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForTableRow:row tableColumn:column]]];
                }
            }
        }];
