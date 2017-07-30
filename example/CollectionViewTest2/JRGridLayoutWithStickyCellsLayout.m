@@ -34,7 +34,7 @@
 @end
 
 @implementation JRGridLayoutWithStickyCellsLayout
--(void) getCollumnAndRowHeights{
+-(void) getColumnAndRowHeights{
     self.hasDynamicRowHeight = [self.collectionView.delegate respondsToSelector:@selector(collectionView:heightForRowAtIndex:)];
     self.hasDynamicColumnWidth = [self.collectionView.delegate respondsToSelector:@selector(collectionView:widthForColumAtIndex:)];
     
@@ -44,10 +44,10 @@
         NSMutableArray* array = [NSMutableArray array];
         NSMutableArray* origins = [NSMutableArray array];
         for (NSUInteger section = 0; section < self.collectionView.numberOfSections; section ++) {
-            CGFloat heigth = [((id<JRGridLayoutWithStickyCellsLayoutDelegate>)(self.collectionView.delegate)) collectionView:self.collectionView heightForRowAtIndex:section];
-            [array addObject:@(heigth)];
+            CGFloat height = [((id<JRGridLayoutWithStickyCellsLayoutDelegate>)(self.collectionView.delegate)) collectionView:self.collectionView heightForRowAtIndex:section];
+            [array addObject:@(height)];
             [origins addObject:@(offset)];
-            offset += heigth;
+            offset += height;
             
         }
         self.rowHeights = array;
@@ -60,10 +60,10 @@
         NSMutableArray* origins = [NSMutableArray array];
         
         for (NSUInteger column = 0; column < [self.collectionView numberOfItemsInSection:0]; column ++) {
-            CGFloat heigth = [((id<JRGridLayoutWithStickyCellsLayoutDelegate>)(self.collectionView.delegate)) collectionView:self.collectionView widthForColumAtIndex:column];
-            [array addObject:@(heigth)];
+            CGFloat height = [((id<JRGridLayoutWithStickyCellsLayoutDelegate>)(self.collectionView.delegate)) collectionView:self.collectionView widthForColumAtIndex:column];
+            [array addObject:@(height)];
             [origins addObject:@(offset)];
-            offset += heigth;
+            offset += height;
         }
         self.columnWidths = array;
         self.columnOriginsX = origins;
@@ -138,9 +138,9 @@
     return 0;
 }
 
--(void) getCollumnAndRowHeightsIfNeeded{
+-(void) getColumnAndRowHeightsIfNeeded{
     if (!self.hasColumnRowsAndHeights) {
-        [self getCollumnAndRowHeights];
+        [self getColumnAndRowHeights];
     }
 }
 -(void) invalidateLayout{
@@ -151,11 +151,11 @@
     [super invalidateLayoutWithContext:context];
     if(context.invalidatedItemIndexPaths || context.invalidateEverything || context.invalidateDataSourceCounts ){
         self.hasColumnRowsAndHeights = NO;
-        [self getCollumnAndRowHeights];
+        [self getColumnAndRowHeights];
     }
 }
 -(CGSize) collectionViewContentSize{
-    [self getCollumnAndRowHeightsIfNeeded];
+    [self getColumnAndRowHeightsIfNeeded];
     
     CGFloat width = 0;
     if (self.hasDynamicColumnWidth) {
@@ -174,7 +174,7 @@
 }
 
 -(UICollectionViewLayoutAttributes*) layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath{
-    [self getCollumnAndRowHeightsIfNeeded];
+    [self getColumnAndRowHeightsIfNeeded];
     UICollectionViewLayoutAttributes* attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
     CGRect frame =  [self frameForItemAtIndexPath:indexPath];
     
@@ -217,7 +217,7 @@
     return attributes;
     
 }
--(NSIndexSet*) visibileColumnsInRect:(CGRect) rect{
+-(NSIndexSet*) visibleColumnsInRect:(CGRect) rect{
     NSMutableIndexSet* toReturn = [NSMutableIndexSet indexSet];
     
     NSInteger firstColumn = [self columnIndexForXPosition:CGRectGetMinX(rect)];
@@ -230,7 +230,7 @@
     
     return toReturn;
 }
-- (NSIndexSet*)visibileRowsInRect:(CGRect)rect {
+- (NSIndexSet*)visibleRowsInRect:(CGRect)rect {
     NSMutableIndexSet* toReturn = [NSMutableIndexSet indexSet];
 
     NSInteger firstRow = [self rowIndexForYPosition:CGRectGetMinY(rect)];
@@ -245,11 +245,11 @@
 }
 
 - (NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect{
-    [self getCollumnAndRowHeightsIfNeeded];
+    [self getColumnAndRowHeightsIfNeeded];
     NSMutableArray* items = [NSMutableArray array];
-    NSIndexSet* visibleColums = [self visibileColumnsInRect:rect];
-    NSIndexSet* visibleRows = [self visibileRowsInRect:rect];
-    [visibleColums enumerateIndexesUsingBlock:^(NSUInteger column, BOOL * _Nonnull stop) {
+    NSIndexSet* visibleColumns = [self visibleColumnsInRect:rect];
+    NSIndexSet* visibleRows = [self visibleRowsInRect:rect];
+    [visibleColumns enumerateIndexesUsingBlock:^(NSUInteger column, BOOL * _Nonnull stop) {
        [visibleRows enumerateIndexesUsingBlock:^(NSUInteger row, BOOL * _Nonnull stop) {
            if ([self.collectionView numberOfSections] > row) {
                if ([self.collectionView numberOfItemsInSection:row] > column) {

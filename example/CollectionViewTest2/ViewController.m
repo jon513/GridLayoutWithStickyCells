@@ -8,7 +8,7 @@
 @property (nonatomic, strong) NSMutableArray* users;
 @property (nonatomic, strong) NSArray* headers;
 @property (nonatomic, strong) NSString* sort;
-@property (nonatomic, assign) BOOL assending;
+@property (nonatomic, assign) BOOL ascending;
 @end
 
 @implementation ViewController
@@ -73,7 +73,7 @@
         NSString* headerText = self.headers[indexPath.row];
         NSString* sortSymbol = @"";
         if ([self.sort isEqualToString:headerText]) {
-            if (self.assending) {
+            if (self.ascending) {
                 sortSymbol = @"▲ ";
             }else{
                 sortSymbol = @"▼ ";
@@ -112,10 +112,10 @@
     if (indexPath.section == 0) {
         NSString* updatedSort = self.headers[indexPath.row];
         if ([updatedSort isEqualToString:self.sort]) {
-            self.assending = !self.assending;
+            self.ascending = !self.ascending;
         }
         self.sort = updatedSort;
-        [self.users sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.sort ascending:self.assending]]];
+        [self.users sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:self.sort ascending:self.ascending]]];
         [self.collectionView setContentOffset:CGPointMake(self.collectionView.contentOffset.x, -self.collectionView.contentInset.top) animated:NO];
         [self.collectionView reloadData];
     }
